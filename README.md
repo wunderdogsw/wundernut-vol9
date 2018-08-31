@@ -88,7 +88,7 @@ Definitions:
 - Performance is a part of elegance.
 - The participant gives Wunderdog the right to publish their source code used in the submitted solutions.
 
-Submit your answer to pahkina@wunderdog.fi at latest YYYY-MM-DD.
+Submit your answer to pahkina@wunderdog.fi at latest 2018-09-30.
 
 The winner is chosen by our Wunderdog jury and he/she will be awarded with Majestouch-2 TLK MINILA Keyboard.
 
