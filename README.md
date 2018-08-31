@@ -48,6 +48,7 @@ The square above is filled, rule #2 applies. The black square is filled.
 The square above is blank, rule #1 applies. The black square is filled.
 
 ![Rules #8](./img/rules-8.png "Rules #8")
+
 ##THE TASK:
 
 Examine the patterns given by continuing it according to the rules. Define whether the pattern is "gliding", “blinking", “vanishing" or "other". 
