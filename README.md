@@ -18,7 +18,7 @@ The filling of each square is defined by the square above it and 4 squares next 
 In case the square you are examining is at the beginning or at the end of a row, i.e. the first, second, penultimate or last, you take into account only the squares there are next to the middle square, 
 which could be 0, 1 or 2 squares on either side.
 
-##EXAMPLES:
+### EXAMPLES:
 
 You’re thinking whether to fill or leave blank the square marked with black. You need to examine the square above (red) and 
 4 squares around it, 2 on each sides (yellow). Because the square above (red) is blank, rule #1 applies. There is only 1 square filled within the 4 surrounding squares, so you'll leave the square blank.
@@ -49,7 +49,7 @@ The square above is blank, rule #1 applies. The black square is filled.
 
 ![Rules #8](./img/rules-8.png "Rules #8")
 
-##THE TASK:
+### THE TASK:
 
 Examine the patterns given by continuing it according to the rules. Define whether the pattern is "gliding", “blinking", “vanishing" or "other". 
 Below the definitions of these types of patterns. Fill in the lines until you recognise a pattern type.
@@ -81,7 +81,7 @@ Definitions:
     other
     blinking
 
-##GENERAL RULES:
+### GENERAL RULES:
 
 - You can use any programming language to solve the problem.
 - The solution must contain the right answer. 
