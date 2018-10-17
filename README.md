@@ -1,5 +1,9 @@
 # Back to school
 
+*Fall 2018*
+
+(Find our other wundernuts [here](https://github.com/wunderdogsw/wunderpahkinas))
+
 It’s that time of the year again... Back to school! This time you won’t have to worry about being bored in class, we’ve got you covered! Back in the days 
 our grandparents kept themselves entertained at school with this game and now we’ve transformed it into a Wundernut! 
 So, take out a grid paper and start filling it in according to the rules.
@@ -89,7 +93,7 @@ Definitions:
 - Performance is a part of elegance.
 - The participant gives Wunderdog the right to publish their source code used in the submitted solutions.
 
-Submit your answer to pahkina@wunderdog.fi at latest 2018-09-30.
+**The submission deadline has passed.**
 
 The winner is chosen by our Wunderdog jury and he/she will be awarded with Majestouch-2 TLK MINILA Keyboard.
 
