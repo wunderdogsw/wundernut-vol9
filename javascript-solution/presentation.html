@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Wundernut 9</title>
+
+    <style>
+      html,
+      body {
+        width: 100%;
+        height: 100%;
+        margin: 0;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
+          'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+          'Helvetica Neue', sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        font-size: 16px;
+      }
+
+      #top {
+        background-color: #00365a;
+        /* position: relative; */
+        display: flex;
+        flex-direction: column;
+        top: 0;
+        left: 0;
+        width: 98%;
+        height: 132px;
+        padding: 1%;
+      }
+
+      .info {
+        display: flex;
+        height: 100%;
+        align-items: center;
+        color: white;
+      }
+
+      #root {
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        padding-top: 10px;
+      }
+
+      .hidden {
+        visibility: hidden;
+      }
+
+      td {
+        width: 20px;
+        height: 20px;
+        min-width: 20px;
+        max-width: 20px;
+        border: 1px solid darkgray;
+        font-size: 12px;
+        text-align: center;
+        padding: 0;
+      }
+
+      td.columns-padding {
+        border-color: #eeeeee;
+      }
+
+      td.red-border {
+        border-color: #ce2121;
+        border-width: 2px;
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        max-width: 18px;
+      }
+
+      tr.orange-border > td {
+        border-color: orange;
+        border-width: 2px;
+        width: 18px;
+        height: 18px;
+        min-width: 18px;
+        max-width: 18px;
+      }
+
+      div.filled {
+        width: 100%;
+        height: 100%;
+        background-color: #eeeeee;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        justify-content: center;
+      }
+
+      select {
+        width: 100%;
+        padding: 4px;
+        margin-bottom: 10px;
+        border-radius: 4px;
+      }
+
+      button {
+        border: none;
+        background-color: #198754;
+        color: #fff;
+        font-weight: 600;
+        padding: 6px;
+        border-radius: 4px;
+        min-width: 32px;
+        min-height: 32px;
+      }
+
+      button .icon {
+        font-size: 0.7rem;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="top">
+      <select id="patterns" onchange="main(true)">
+        <option value="##.######">##.######</option>
+        <option
+          value="#.###......................#.###......................####......................###.#......................###.#"
+        >
+          #.###......................#.###......................####......................###.#......................###.#
+        </option>
+        <option value="#######">#######</option>
+        <option value="#.#..#...####..##..##..##">
+          #.#..#...####..##..##..##
+        </option>
+        <option value="###.#....#.###">###.#....#.###</option>
+        <option value="########">########</option>
+        <option value="##...#.###########">##...#.###########</option>
+        <option value="#.#..#...####..##..##..##.....##">
+          #.#..#...####..##..##..##.....##
+        </option>
+        <option value="#######.##.##.#.#....#.######">
+          #######.##.##.#.#....#.######
+        </option>
+        <option value="#.######">#.######</option>
+        <option value="##....#.#....#.....#....#....#.....###.#">
+          ##....#.#....#.....#....#....#.....###.#
+        </option>
+        <option
+          value="#.###........................................................#######........................................................###.#"
+        >
+          #.###........................................................#######........................................................###.#
+        </option>
+        <option value="#...###...#.#">#...###...#.#</option>
+        <option value="#...#.#..###...#">#...#.#..###...#</option>
+        <option value="#########">#########</option>
+        <option value="#######.##.##.#.#">#######.##.##.#.#</option>
+        <option value="#...#...#...#...#...#...#...#...#...#...#">
+          #...#...#...#...#...#...#...#...#...#...#
+        </option>
+        <option value="#..##.#..#">#..##.#..#</option>
+        <option
+          value="#.###...................................................###.#"
+        >
+          #.###...................................................###.#
+        </option>
+        <option value="######">######</option>
+        <option
+          value="#...#...#...#...#...#...#...#...#...#...#....#######.##.##.#.#"
+        >
+          #...#...#...#...#...#...#...#...#...#...#....#######.##.##.#.#
+        </option>
+      </select>
+
+      <div>
+        <button onclick="presentationSkipToStart()">
+          <span class="icon">⏮️</span>
+        </button>
+        <button id="play" onclick="presentationPausePlay()">
+          <span class="icon">⏸</span>
+        </button>
+        <button onclick="presentationSkipToEnd()">
+          <span class="icon">⏭️</span>
+        </button>
+        <button onclick="presentationStepMinus()">
+          <span class="icon">−</span>
+        </button>
+        <button onclick="presentationStepPlus()">
+          <span class="icon">➕</span>
+        </button>
+      </div>
+      <div class="info"><span id="info"></span></div>
+    </div>
+
+    <div id="root"></div>
+
+    <script>
+      'use strict'
+
+      // ***** presentation begin
+      let presentationIdTimeline = []
+      let presentationIdCounter = 0
+      let presentationIdCount = 0
+      let presentationSkiped = false
+      let presentationIsPlaying = true
+
+      const PRESENTATION_COLUMNS_PADDING = 102
+      // ***** presentation end
+
+      const rootElement = document.getElementById('root')
+
+      const MAX_LINES = 100
+
+      const CHAR_FILLED = '#'
+      const CHAR_BLANK = '.'
+
+      const PATTERN_TYPE_OTHER = 'other'
+      const PATTERN_TYPE_GLIDING = 'gliding'
+      const PATTERN_TYPE_VANISHING = 'vanishing'
+      const PATTERN_TYPE_BLINKING = 'blinking'
+
+      const BLANK_AND_NEXT = 0b00
+      const FILL_AND_NEXT = 0b10
+      const BLANK_AND_JUMP = 0b01
+      const FILL_AND_JUMP = 0b11
+
+      const FILL_MASK = 0b10
+      const JUMP_MASK = 0b01
+
+      const commands = [
+        /*  0 ..... */ BLANK_AND_JUMP,
+        /*  1 ....# */ BLANK_AND_JUMP,
+        /*  2 ...#. */ BLANK_AND_JUMP,
+        /*  3 ...## */ FILL_AND_NEXT,
+        /*  4 ..#.. */ BLANK_AND_JUMP,
+        /*  5 ..#.# */ BLANK_AND_NEXT,
+        /*  6 ..##. */ BLANK_AND_NEXT,
+        /*  7 ..### */ FILL_AND_NEXT,
+        /*  8 .#... */ BLANK_AND_JUMP,
+        /*  9 .#..# */ FILL_AND_NEXT,
+        /* 10 .#.#. */ FILL_AND_NEXT,
+        /* 11 .#.## */ FILL_AND_NEXT,
+        /* 12 .##.. */ BLANK_AND_NEXT,
+        /* 13 .##.# */ FILL_AND_NEXT,
+        /* 14 .###. */ FILL_AND_NEXT,
+        /* 15 .#### */ BLANK_AND_NEXT,
+        /* 16 #.... */ BLANK_AND_JUMP,
+        /* 17 #...# */ FILL_AND_JUMP,
+        /* 18 #..#. */ FILL_AND_JUMP,
+        /* 19 #..## */ FILL_AND_NEXT,
+        /* 20 #.#.. */ BLANK_AND_JUMP,
+        /* 21 #.#.# */ FILL_AND_NEXT,
+        /* 22 #.##. */ FILL_AND_NEXT,
+        /* 23 #.### */ BLANK_AND_NEXT,
+        /* 24 ##... */ FILL_AND_JUMP,
+        /* 25 ##..# */ FILL_AND_NEXT,
+        /* 26 ##.#. */ FILL_AND_NEXT,
+        /* 27 ##.## */ BLANK_AND_NEXT,
+        /* 28 ###.. */ FILL_AND_NEXT,
+        /* 29 ###.# */ BLANK_AND_NEXT,
+        /* 30 ####. */ BLANK_AND_NEXT,
+        /* 31 ##### */ FILL_AND_NEXT,
+      ]
+
+      const patterns = [
+        '##.######',
+        '#.###......................#.###......................####......................###.#......................###.#',
+        '#######',
+        '#.#..#...####..##..##..##',
+        '###.#....#.###',
+        '########',
+        '##...#.###########',
+        '#.#..#...####..##..##..##.....##',
+        '#######.##.##.#.#....#.######',
+        '#.######',
+        '##....#.#....#.....#....#....#.....###.#',
+        '#.###........................................................#######........................................................###.#',
+        '#...###...#.#',
+        '#...#.#..###...#',
+        '#########',
+        '#######.##.##.#.#',
+        '#...#...#...#...#...#...#...#...#...#...#',
+        '#..##.#..#',
+        '#.###...................................................###.#',
+        '######',
+        '#...#...#...#...#...#...#...#...#...#...#....#######.##.##.#.#',
+      ]
+
+      // ****************************************************************************
+      function unwind(line, index) {
+        let bits = 0
+        line.includes(index + 2) ? (bits |= 0b00001) : null
+        line.includes(index + 1) ? (bits |= 0b00010) : null
+        line.includes(index + 0) ? (bits |= 0b00100) : null
+        line.includes(index - 1) ? (bits |= 0b01000) : null
+        line.includes(index - 2) ? (bits |= 0b10000) : null
+        return commands[bits]
+      }
+
+      // ****************************************************************************
+      function getPattern(asciiPattern) {
+        const indexedPatern = []
+        asciiPattern
+          .split('')
+          .forEach((item, index) =>
+            item === CHAR_FILLED ? indexedPatern.push(index) : null
+          )
+        return indexedPatern
+      }
+
+      // ****************************************************************************
+      function getNextLine(line, presentationRow) {
+        const newLine = []
+        let zeroIndexOffset = Number.MIN_SAFE_INTEGER
+        let squareNextLineIndex = Number.MIN_SAFE_INTEGER
+
+        for (let i = 1; i < line.length; i++) {
+          const filledIndex = line[i]
+          let command
+
+          if (squareNextLineIndex < filledIndex - 2) {
+            squareNextLineIndex = filledIndex - 3
+          } else {
+            continue
+          }
+
+          do {
+            ++squareNextLineIndex
+            command = unwind(line, squareNextLineIndex)
+
+            // ***** presentation begin
+            presentationUnwind(presentationRow, squareNextLineIndex, command)
+            // ***** presentation end
+
+            if (command & FILL_MASK) {
+              if (zeroIndexOffset === Number.MIN_SAFE_INTEGER) {
+                zeroIndexOffset = squareNextLineIndex
+              }
+
+              newLine.push(squareNextLineIndex)
+            }
+          } while (!(command & JUMP_MASK))
+        }
+
+        return [
+          newLine,
+          newLine.map((filledIndex) => filledIndex - zeroIndexOffset),
+        ]
+      }
+
+      // ****************************************************************************
+      function checkPatternType(
+        lines,
+        zeroIndexLines,
+        newLine,
+        newZeroIndexLine
+      ) {
+        if (newLine.length < 2) {
+          // ***** presentation begin
+          presentationPatternTypeRows(lines.length, PATTERN_TYPE_VANISHING)
+          // ***** presentation end
+          return PATTERN_TYPE_VANISHING
+        }
+
+        for (let i = 0; i < lines.length; i++) {
+          const line = lines[i]
+          const zeroIndexLine = zeroIndexLines[i]
+
+          if (
+            line.length === newLine.length &&
+            JSON.stringify(line) === JSON.stringify(newLine)
+          ) {
+            // ***** presentation begin
+            presentationPatternTypeRows(lines.length, PATTERN_TYPE_BLINKING, i)
+            // ***** presentation end
+            return PATTERN_TYPE_BLINKING
+          }
+
+          if (
+            zeroIndexLine.length === newZeroIndexLine.length &&
+            JSON.stringify(zeroIndexLine) === JSON.stringify(newZeroIndexLine)
+          ) {
+            // ***** presentation begin
+            presentationPatternTypeRows(
+              zeroIndexLines.length,
+              PATTERN_TYPE_GLIDING,
+              i
+            )
+            // ***** presentation end
+            return PATTERN_TYPE_GLIDING
+          }
+        }
+
+        return PATTERN_TYPE_OTHER
+      }
+
+      // ****************************************************************************
+      function main(autoStart = false) {
+        const item = document.getElementById('patterns').value
+        const lines = []
+        const zeroIndexLines = []
+        let lineIndex = 0
+        let patternType = PATTERN_TYPE_OTHER
+        const firstLine = getPattern(item)
+
+        rootElement.innerHTML = ''
+
+        lines.push(firstLine)
+        zeroIndexLines.push(firstLine)
+
+        const columns =
+          lines[0][lines[0].length - 1] + 1 + PRESENTATION_COLUMNS_PADDING * 2
+
+        // ***** presentation begin
+        presentationIdTimeline = []
+        presentationIdCounter = 0
+        presentationIdCount = 0
+        presentationSkiped = false
+        presentationIsPlaying = autoStart
+        if (presentationIsPlaying) {
+          presentationSetPause()
+        } else {
+          presentationSetPlay()
+        }
+        const presentationTableNode = presentationAddTable(rootElement)
+        presentationAddRow(lines[0], 0, columns, presentationTableNode)
+        // ***** presentation end
+
+        while (lineIndex < MAX_LINES) {
+          const [newLine, newZeroIndexLine] = getNextLine(
+            lines[lineIndex],
+            lineIndex + 1
+          )
+
+          // ***** presentation begin
+          presentationAddRow(
+            newLine,
+            lineIndex + 1,
+            columns,
+            presentationTableNode
+          )
+          // ***** presentation end
+
+          patternType = checkPatternType(
+            lines,
+            zeroIndexLines,
+            newLine,
+            newZeroIndexLine
+          )
+
+          if (patternType !== PATTERN_TYPE_OTHER) {
+            break
+          }
+
+          lines.push(newLine)
+          zeroIndexLines.push(newZeroIndexLine)
+          lineIndex++
+        }
+
+        if (patternType === PATTERN_TYPE_OTHER) {
+          presentationPatternTypeRows(-1, patternType)
+        }
+
+        rootElement.scrollLeft =
+          (rootElement.scrollWidth - document.body.clientWidth) / 2
+
+        animate()
+      }
+
+      main(true)
+
+      // ****************************************************************************
+      // ****************************************************************************
+      // ****************************************************************************
+      // ***** presentation functions begin
+      // ****************************************************************************
+      function presentationStepPlus() {
+        let isErased = false
+
+        if (presentationIdCounter < presentationIdCount) {
+          presentationIdTimeline[presentationIdCounter].id.forEach(
+            (id, index) => {
+              switch (
+                presentationIdTimeline[presentationIdCounter].action[index]
+              ) {
+                case 'add':
+                  document
+                    .getElementById(id)
+                    .classList.add(
+                      presentationIdTimeline[presentationIdCounter].payload[
+                        index
+                      ]
+                    )
+                  break
+
+                case 'innerHTML':
+                  document.getElementById(id).innerHTML =
+                    presentationIdTimeline[presentationIdCounter].payload[index]
+                  break
+
+                case 'erase':
+                  isErased = true
+                default:
+                  document
+                    .getElementById(id)
+                    .classList.remove(
+                      presentationIdTimeline[presentationIdCounter].payload[
+                        index
+                      ]
+                    )
+              }
+            }
+          )
+          presentationIdCounter++
+        } else {
+          presentationSkiped = false
+        }
+
+        if (isErased) {
+          presentationStepPlus()
+        }
+      }
+
+      // ****************************************************************************
+      function presentationStepMinus() {
+        let isErased = false
+
+        if (presentationIdCounter > 0) {
+          presentationIdCounter--
+          presentationIdTimeline[presentationIdCounter].id.forEach(
+            (id, index) => {
+              switch (
+                presentationIdTimeline[presentationIdCounter].action[index]
+              ) {
+                case 'add':
+                  document
+                    .getElementById(id)
+                    .classList.remove(
+                      presentationIdTimeline[presentationIdCounter].payload[
+                        index
+                      ]
+                    )
+
+                  if (
+                    presentationIdCounter > 0 &&
+                    presentationIdTimeline[presentationIdCounter - 1]
+                      .action[0] === 'erase'
+                  ) {
+                    isErased = true
+                  }
+                  break
+
+                case 'innerHTML':
+                  document.getElementById(id).innerHTML =
+                    presentationIdTimeline[presentationIdCounter].payload[index]
+                  break
+
+                case 'erase':
+                default:
+                  document
+                    .getElementById(id)
+                    .classList.add(
+                      presentationIdTimeline[presentationIdCounter].payload[
+                        index
+                      ]
+                    )
+              }
+            }
+          )
+        }
+
+        if (isErased) {
+          presentationStepMinus()
+        }
+      }
+
+      // ****************************************************************************
+      function presentationAddTable(parentNode) {
+        const tableNode = document.createElement('table')
+        const tbodyNode = document.createElement('tbody')
+
+        tableNode.appendChild(tbodyNode)
+        parentNode.appendChild(tableNode)
+
+        return tbodyNode
+      }
+
+      // ****************************************************************************
+      function presentationAddRow(line, row, columns, parentNode) {
+        const trNode = document.createElement('tr')
+        const trId = 'trr' + row
+
+        for (let i = 0; i < columns; i++) {
+          const tdId = 'tdr' + row + 'c' + i
+          const divId = 'divr' + row + 'c' + i
+
+          const tdNode = document.createElement('td')
+          tdNode.setAttribute('id', tdId)
+
+          if (
+            i < PRESENTATION_COLUMNS_PADDING ||
+            i > columns - PRESENTATION_COLUMNS_PADDING - 1
+          ) {
+            tdNode.classList.add('columns-padding')
+          }
+
+          if (line.includes(i - PRESENTATION_COLUMNS_PADDING)) {
+            const divNode = document.createElement('div')
+            const textNode = document.createTextNode(
+              i - PRESENTATION_COLUMNS_PADDING
+            )
+            divNode.appendChild(textNode)
+            divNode.classList.add('filled', 'hidden')
+            divNode.setAttribute('id', divId)
+
+            tdNode.appendChild(divNode)
+
+            if (row === 0) {
+              presentationIdTimeline.push({
+                id: [divId, 'info'],
+                payload: [
+                  'hidden',
+                  '<em> ƒ () getPattern</em> - convert ascii pattern to array of numbers',
+                ],
+                action: ['remove', 'innerHTML'],
+              })
+              ++presentationIdCount
+            }
+          }
+          trNode.appendChild(tdNode)
+        }
+
+        trNode.setAttribute('id', trId)
+        parentNode.appendChild(trNode)
+
+        return trNode
+      }
+
+      // ****************************************************************************
+      function presentationUnwind(row, index, command) {
+        const id = []
+        const payload = []
+        const action = []
+        const actionAfter = []
+        let commandText
+
+        switch (command) {
+          case BLANK_AND_JUMP:
+            commandText = 'blank square and jump to the next square'
+            break
+          case FILL_AND_JUMP:
+            commandText = 'fill square and jump to the next square'
+            break
+          case FILL_AND_NEXT:
+            commandText = 'fill square and test the next square on the right'
+            break
+
+          default:
+            commandText = 'blank square and test the next square on the right'
+            break
+        }
+
+        for (let i = -2; i < 3; i++) {
+          id.push(
+            'tdr' + (row - 1) + 'c' + (index + i + PRESENTATION_COLUMNS_PADDING)
+          )
+          payload.push('red-border')
+          action.push('add')
+          actionAfter.push('erase')
+        }
+        id.push('tdr' + row + 'c' + (index + PRESENTATION_COLUMNS_PADDING))
+        payload.push('red-border')
+        action.push('add')
+        actionAfter.push('erase')
+
+        id.push('info')
+        payload.push(
+          '<em> ƒ () unwind</em> - convert array of number to pattern, and return command: <strong>' +
+            commandText +
+            '</strong>'
+        )
+        action.push('innerHTML')
+        actionAfter.push('innerHTML')
+
+        presentationIdTimeline.push({
+          id,
+          payload,
+          action,
+        })
+        ++presentationIdCount
+
+        if (command & FILL_MASK) {
+          presentationIdTimeline.push({
+            id: ['divr' + row + 'c' + (index + PRESENTATION_COLUMNS_PADDING)],
+            payload: ['hidden'],
+            action: ['remove'],
+          })
+          ++presentationIdCount
+        }
+
+        presentationIdTimeline.push({
+          id,
+          payload,
+          action: actionAfter,
+        })
+        ++presentationIdCount
+      }
+
+      // ****************************************************************************
+      function presentationPatternTypeRows(
+        newLineIndex,
+        patternType,
+        lineIndex = -1
+      ) {
+        const id = []
+        const payload = []
+        const action = []
+
+        if (newLineIndex !== -1) {
+          id.push('trr' + newLineIndex)
+          payload.push('orange-border')
+          action.push('add')
+
+          if (lineIndex > -1) {
+            id.push('trr' + lineIndex)
+            payload.push('orange-border')
+            action.push('add')
+          }
+        }
+
+        id.push('info')
+        payload.push(
+          '<em> ƒ () checkPatternType</em> - found pattern type: <strong>' +
+            patternType +
+            '</strong>'
+        )
+        action.push('innerHTML')
+
+        presentationIdTimeline.push({
+          id,
+          payload,
+          action,
+        })
+        ++presentationIdCount
+      }
+
+      // ****************************************************************************
+      function animate() {
+        if (
+          presentationIsPlaying &&
+          presentationIdCounter < presentationIdCount
+        ) {
+          if (presentationSkiped) {
+            presentationStepPlus()
+            animate()
+          } else {
+            setTimeout(() => {
+              presentationStepPlus()
+              animate()
+            }, 0)
+          }
+        } else if (presentationIsPlaying) {
+          presentationPausePlay()
+        }
+      }
+
+      // ****************************************************************************
+      function presentationSetPause() {
+        document.getElementById('play').innerHTML =
+          '<span class="icon">⏸</span>'
+      }
+
+      // ****************************************************************************
+      function presentationSetPlay() {
+        document.getElementById('play').innerHTML =
+          '<span class="icon">▶️</span>'
+      }
+
+      // ****************************************************************************
+      function presentationPausePlay() {
+        if (presentationIsPlaying) {
+          presentationSetPlay()
+          presentationIsPlaying = false
+        } else {
+          presentationSetPause()
+          presentationIsPlaying = true
+          animate()
+        }
+      }
+
+      // ****************************************************************************
+      function presentationSkipToStart() {
+        presentationIdCounter = 0
+        document.getElementById('info').innerHTML = ''
+        presentationSetPlay()
+        main()
+      }
+
+      // ****************************************************************************
+      function presentationSkipToEnd() {
+        presentationSkiped = true
+        if (!presentationIsPlaying) {
+          presentationIsPlaying = true
+          animate()
+        }
+      }
+
+      // ***** presentation functions end
+      // ****************************************************************************
+    </script>
+  </body>
+</html>
